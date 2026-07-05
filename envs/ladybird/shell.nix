@@ -3,23 +3,7 @@
   extraPkgs ? [],
   ...
 }:
-pkgs.mkShell {
-  name = "ladybird-env";
-
-  inputsFrom = [
-    pkgs.ladybird
-  ];
-
-  packages = with pkgs; [
-    ccache
-    clang-tools
-    prettier
-    icu78.dev
-    mimalloc
-    dejavu_fonts
-    liberation_ttf
-  ] ++ extraPkgs;
-
+let
   wuffs = pkgs.stdenv.mkDerivation {
     pname = "wuffs-release-c";
     version = "0.3.4";
@@ -38,13 +22,26 @@ pkgs.mkShell {
       cp release/c/wuffs-v0.3.c $out/include/wuffs/
     '';
   };
-
+in
+pkgs.mkShell {
+  name = "ladybird-env";
+  inputsFrom = [
+    pkgs.ladybird
+  ];
+  packages = with pkgs; [
+    ccache
+    clang-tools
+    prettier
+    icu78.dev
+    mimalloc
+    dejavu_fonts
+    liberation_ttf
+    wuffs
+  ] ++ extraPkgs;
   ICU_ROOT = "${pkgs.icu78.dev}";
-
   FONTCONFIG_FILE = pkgs.makeFontsConf {
     fontDirectories = [ pkgs.dejavu_fonts pkgs.liberation_ttf ];
   };
-
   # https://github.com/NixOS/nixpkgs/blob/79a8a723b9/pkgs/by-name/la/ladybird/package.nix#L144-L147
   NIX_LDFLAGS = "-lGL -lfontconfig";
 }
