@@ -20,6 +20,25 @@ pkgs.mkShell {
     liberation_ttf
   ] ++ extraPkgs;
 
+  wuffs = pkgs.stdenv.mkDerivation {
+    pname = "wuffs-release-c";
+    version = "0.3.4";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "google";
+      repo = "wuffs-mirror-release-c";
+      rev = "v0.3.4";
+      hash = "sha256-V7inWJqH7Q4Ac/ZB//7XHrpgfAYUPBxWBerBem6Q/Kk=";
+    };
+
+    dontBuild = true;
+
+    installPhase = ''
+      mkdir -p $out/include/wuffs
+      cp release/c/wuffs-v0.3.c $out/include/wuffs/
+    '';
+  };
+
   ICU_ROOT = "${pkgs.icu78.dev}";
 
   FONTCONFIG_FILE = pkgs.makeFontsConf {
